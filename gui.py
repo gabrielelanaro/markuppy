@@ -7,12 +7,12 @@ class MyFrame(wx.Frame):
                  size=(500,500)):
         super(MyFrame, self).__init__(parent, id, title, size=size)
         
-        self.create_menu()
-        self.create_body()
+        self._create_menu()
+        self._create_body()
         
         self.Show()
 
-    def create_menu(self):
+    def _create_menu(self):
         menubar = wx.MenuBar()
         
         filemenu = wx.Menu()
@@ -27,14 +27,19 @@ class MyFrame(wx.Frame):
         self.SetMenuBar(menubar)
 
         
-    def create_body(self):
+    def _create_body(self):
         body = wx.BoxSizer(wx.HORIZONTAL)
-        input_ctrl = wx.TextCtrl()
-        output_ctrl = wx.TextCtrl()
-        body.Add(input_ctrl)
-        body.Add(output_ctrl)
+        
+        textctrl_style = wx.TE_MULTILINE
+        input_ctrl = wx.TextCtrl(self, style = textctrl_style)
+        convert_button = wx.Button(self, label="Convert")
+        output_ctrl = wx.TextCtrl(self, style = textctrl_style)
+        
+        body.Add(input_ctrl, proportion=1, flag=wx.EXPAND)
+        body.Add(convert_button, proportion=1, flag=wx.ALIGN_CENTER_VERTICAL)
+        body.Add(output_ctrl, proportion=1, flag=wx.EXPAND)
 
-        self.Add(body)
+        self.SetSizer(body)
         
     def create_statusbar(self):
         return
