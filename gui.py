@@ -1,4 +1,5 @@
 import wx
+
 def mock_handler(*args):
     return
 
@@ -29,14 +30,29 @@ class MyFrame(wx.Frame):
         
     def _create_body(self):
         body = wx.BoxSizer(wx.HORIZONTAL)
+        convert_controls_box = wx.BoxSizer(wx.VERTICAL) 
+
         
         textctrl_style = wx.TE_MULTILINE
         input_ctrl = wx.TextCtrl(self, style = textctrl_style)
         convert_button = wx.Button(self, label="Convert")
+        format_combo = wx.ComboBox(self, choices=["HTML", "LaTeX"],
+                                   style=wx.CB_READONLY)
+        format_combo.SetStringSelection("HTML")
+        
         output_ctrl = wx.TextCtrl(self, style = textctrl_style)
+
+        
+        
+        convert_controls_box.Add(convert_button, proportion=1,
+                                 flag=wx.EXPAND)
+        convert_controls_box.Add(format_combo, proportion=1,
+                                 flag=wx.EXPAND)
         
         body.Add(input_ctrl, proportion=1, flag=wx.EXPAND)
-        body.Add(convert_button, proportion=1, flag=wx.ALIGN_CENTER_VERTICAL)
+        body.Add(convert_controls_box,
+                 proportion=1,
+                 flag=wx.ALIGN_CENTER_VERTICAL)
         body.Add(output_ctrl, proportion=1, flag=wx.EXPAND)
 
         self.SetSizer(body)
