@@ -4,16 +4,27 @@ def mock_handler(*args):
     return
 
 class MyFrame(wx.Frame):
+    """Main view of the program, it represents the main window.
+    
+    """
+
     def __init__(self, parent=None, id=-1, title="MarKuppY",
                  size=(500,500)):
         super(MyFrame, self).__init__(parent, id, title, size=size)
         
+        # this is just to keep things cleaner
         self._create_menu()
         self._create_body()
+        self._create_statusbar()
         
         self.Show()
 
     def _create_menu(self):
+        """Place the widgets that constitute the menu of the
+        application.
+
+        """
+
         menubar = wx.MenuBar()
         
         filemenu = wx.Menu()
@@ -24,15 +35,20 @@ class MyFrame(wx.Frame):
         
         menubar.Append(filemenu, "&File")
         menubar.Append(editmenu, "Edit")
-        
+
         self.SetMenuBar(menubar)
 
         
     def _create_body(self):
+        """Place the widgets that constitute the body of the
+        application.
+
+        """
+        # Layout widgets
         body = wx.BoxSizer(wx.HORIZONTAL)
         convert_controls_box = wx.BoxSizer(wx.VERTICAL) 
 
-        
+        # Controls that will take the input
         textctrl_style = wx.TE_MULTILINE
         input_ctrl = wx.TextCtrl(self, style = textctrl_style)
         convert_button = wx.Button(self, label="Convert")
@@ -43,22 +59,23 @@ class MyFrame(wx.Frame):
         output_ctrl = wx.TextCtrl(self, style = textctrl_style)
 
         
-        
-        convert_controls_box.Add(convert_button, proportion=1,
+        # Adding the control widgets to the layout widgets
+        convert_controls_box.Add(convert_button, proportion=2,
                                  flag=wx.EXPAND)
         convert_controls_box.Add(format_combo, proportion=1,
                                  flag=wx.EXPAND)
         
-        body.Add(input_ctrl, proportion=1, flag=wx.EXPAND)
+        body.Add(input_ctrl, proportion=2, flag=wx.EXPAND)
         body.Add(convert_controls_box,
                  proportion=1,
                  flag=wx.ALIGN_CENTER_VERTICAL)
-        body.Add(output_ctrl, proportion=1, flag=wx.EXPAND)
+        body.Add(output_ctrl, proportion=2, flag=wx.EXPAND)
 
         self.SetSizer(body)
         
-    def create_statusbar(self):
-        return
+    def _create_statusbar(self):
+        self.statusbar = self.CreateStatusBar()
+        self.statusbar.SetStatusText('Ready')
         
 
 
