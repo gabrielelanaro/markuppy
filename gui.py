@@ -1,11 +1,9 @@
 import wx
 
-def mock_handler(*args):
-    return
 
 class MyFrame(wx.Frame):
     """Main view of the program, it represents the main window.
-    
+
     """
 
     def __init__(self, parent=None, id=-1, title="MarKuppY",
@@ -28,10 +26,13 @@ class MyFrame(wx.Frame):
         menubar = wx.MenuBar()
         
         filemenu = wx.Menu()
-        quit = filemenu.Append(wx.ID_EXIT, '&Quit', "Quit application")
+        # _b is to specify that it is a "button"
+        quit_b = filemenu.Append(wx.ID_EXIT, '&Quit', "Quit application")
         
         editmenu = wx.Menu()
-        cut = editmenu.Append(wx.ID_CUT, 'Cut')
+        cut_b = editmenu.Append(wx.ID_CUT, 'Cut')
+        copy_b = editmenu.Append(wx.ID_COPY, 'Copy')
+        paste_b = editmenu.Append(wx.ID_PASTE, 'Paste')
         
         menubar.Append(filemenu, "&File")
         menubar.Append(editmenu, "Edit")
