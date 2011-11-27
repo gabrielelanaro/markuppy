@@ -1,5 +1,5 @@
 import wx
-
+from statemachine import MarkUp
 
 class MyFrame(wx.Frame):
     """Main view of the program, it represents the main window.
@@ -14,6 +14,9 @@ class MyFrame(wx.Frame):
         self._create_menu()
         self._create_body()
         self._create_statusbar()
+        
+        # Binding
+        self.convert_button.Bind(wx.EVT_BUTTON, self.OnConvertClick)
         
         self.SetMinSize(size) # To prevent collapsing the window when
                               # resizing
@@ -62,19 +65,19 @@ class MyFrame(wx.Frame):
 
         # Controls that will take the input
         textctrl_style = wx.TE_MULTILINE
-        input_ctrl = wx.TextCtrl(self, style = textctrl_style)
-        convert_button = wx.Button(self, label="Convert")
-        format_combo = wx.ComboBox(self, choices=["HTML", "LaTeX"],
-                                   style=wx.CB_READONLY)
-        format_combo.SetStringSelection("HTML")
+        input_ctrl = self.input_ctrl = wx.TextCtrl(self, style = textctrl_style)
+        convert_button = self.convert_button = wx.Button(self, label="Convert")
+        self.format_combo = wx.ComboBox(self, choices=["HTML", "LaTeX"],
+                                        style=wx.CB_READONLY)
+        self.format_combo.SetStringSelection("HTML")
         
-        output_ctrl = wx.TextCtrl(self, style = textctrl_style)
+        output_ctrl = self.output_ctrl = wx.TextCtrl(self, style = textctrl_style)
 
         
         # Adding the control widgets to the layout widgets
         convert_controls_box.Add(convert_button, proportion=2,
                                  flag=wx.EXPAND|wx.FIXED_MINSIZE)
-        convert_controls_box.Add(format_combo, proportion=1,
+        convert_controls_box.Add(self.format_combo, proportion=1,
                                  flag=wx.EXPAND)
         
         body.Add(input_ctrl, proportion=2, flag=wx.EXPAND)
@@ -89,8 +92,14 @@ class MyFrame(wx.Frame):
         self.statusbar = self.CreateStatusBar()
         self.statusbar.SetStatusText('Ready')
         
-
-
+    def OnConvertClick(self, e):
+        choice = self.format_combo.GetValue()
+        in_text = self.input_ctrl.GetValue() 
+        print in_text
+        markup = MarkUp(in_text)
+        out_text = markup.translate(format=choice)
+        self.output_ctrl.ChangeValue(out_text)
+        
 if __name__ == '__main__':
     app = wx.App()
     fr = MyFrame()
