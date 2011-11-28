@@ -1,5 +1,7 @@
 import wx
 from statemachine import MarkUp
+import os
+
 
 class MyFrame(wx.Frame):
     """Main view of the program, it represents the main window.
@@ -7,7 +9,7 @@ class MyFrame(wx.Frame):
     """
 
     def __init__(self, parent=None, id=-1, title="MarKuppY",
-                 size=(500,500)):
+                 size=(1000,500)):
         super(MyFrame, self).__init__(parent, id, title, size=size)
 
         # this is just to keep things cleaner
@@ -19,7 +21,11 @@ class MyFrame(wx.Frame):
         self.convert_button.Bind(wx.EVT_BUTTON, self.OnConvertClick)
         self.Bind(wx.EVT_MENU, self.OnCopy, self.copy_me)
         self.Bind(wx.EVT_MENU, self.OnPaste, self.paste_me)
-        
+        self.Bind(wx.EVT_MENU, self.OnCut, self.cut_me)
+        self.Bind(wx.EVT_MENU, self.OnOpen, self.open_me)
+        self.Bind(wx.EVT_MENU, self.OnSaveIn, self.save_in_me)
+        self.Bind(wx.EVT_MENU, self.OnSaveOut, self.save_out_me)
+        self.Bind(wx.EVT_MENU, self.OnQuit, self.quit_me)
         
         self.SetMinSize(size) # To prevent collapsing the window when
                               # resizing
@@ -48,6 +54,11 @@ class MyFrame(wx.Frame):
 
         self.copy_me = copy_me
         self.paste_me = paste_me
+        self.cut_me = cut_me
+        self.open_me = open_me
+        self.save_in_me = save_in_me
+        self.save_out_me = save_out_me
+        self.quit_me = quit_me
         
         helpmenu = wx.Menu()
         manual_me = helpmenu.Append(wx.ID_HELP, 'Manual')
@@ -101,10 +112,42 @@ class MyFrame(wx.Frame):
     def OnConvertClick(self, e):
         choice = self.format_combo.GetValue()
         in_text = self.input_ctrl.GetValue() 
-        print in_text
         markup = MarkUp(in_text)
         out_text = markup.translate(format=choice)
         self.output_ctrl.ChangeValue(out_text)
+
+    def OnOpen(self, e):
+        dial = wx.FileDialog(self,message="Open an input file", defaultDir=".", style=wx.FD_OPEN)
+        if dial.ShowModal() == wx.ID_OK:
+            filename = dial.GetFilename()
+            dirname = dial.GetDirectory()
+            f = open(os.path.join(dirname, filename), 'r')
+            self.input_ctrl.SetValue(f.read())
+            f.close()
+        dial.Destroy()
+
+    def OnSaveIn(self, e):
+        dial = wx.FileDialog(self, message="Save the input file", defaultDir=".", style=wx.FD_SAVE)
+        if dial.ShowModal() == wx.ID_OK:
+            filename = dial.GetFilename()
+            dirname = dial.GetDirectory()
+            value = self.input_ctrl.GetValue()
+            f = open(os.path.join(dirname, filename), 'w')
+            f.write(value)
+            f.close()
+        dial.Destroy()
+        
+
+    def OnSaveOut(self, e):
+        dial = wx.FileDialog(self, message="Save the output file", defaultDir=".", style=wx.FD_SAVE)
+        if dial.ShowModal() == wx.ID_OK:
+            filename = dial.GetFilename()
+            dirname = dial.GetDirectory()
+            value = self.output_ctrl.GetValue()
+            f = open(os.path.join(dirname, filename), 'w')
+            f.write(value)
+            f.close()
+        dial.Destroy()
 
     def OnCopy(self, e):
         widget = self.FindFocus()
@@ -127,10 +170,26 @@ class MyFrame(wx.Frame):
                 widget.WriteText(do.GetText())
 
     def OnCut(self, e):
-        pass
-    
+        widget = self.FindFocus()
+        start,end = widget.GetSelection()
+        
+        if not wx.TheClipboard.IsOpened():  # may crash, otherwise
+            do = wx.TextDataObject()
+            do.SetText(widget.GetString(start, end))
+            wx.TheClipboard.Open()
+            wx.TheClipboard.SetData(do)
+            wx.TheClipboard.Close()
+            widget.Remove(start,end)
+
+    def OnQuit(self, e):
+        self.Close()
+debug = True
+
 if __name__ == '__main__':
     app = wx.App()
     fr = MyFrame()
+    
+    if debug:
+        fr.input_ctrl.SetValue(open("test_input.txt").read())
     app.MainLoop()
     
