@@ -17,6 +17,9 @@ class MyFrame(wx.Frame):
         
         # Binding
         self.convert_button.Bind(wx.EVT_BUTTON, self.OnConvertClick)
+        self.Bind(wx.EVT_MENU, self.OnCopy, self.copy_me)
+        self.Bind(wx.EVT_MENU, self.OnPaste, self.paste_me)
+        
         
         self.SetMinSize(size) # To prevent collapsing the window when
                               # resizing
@@ -43,6 +46,9 @@ class MyFrame(wx.Frame):
         copy_me = editmenu.Append(wx.ID_COPY)
         paste_me = editmenu.Append(wx.ID_PASTE)
 
+        self.copy_me = copy_me
+        self.paste_me = paste_me
+        
         helpmenu = wx.Menu()
         manual_me = helpmenu.Append(wx.ID_HELP, 'Manual')
         about_me = helpmenu.Append(wx.ID_ABOUT)
@@ -99,7 +105,30 @@ class MyFrame(wx.Frame):
         markup = MarkUp(in_text)
         out_text = markup.translate(format=choice)
         self.output_ctrl.ChangeValue(out_text)
+
+    def OnCopy(self, e):
+        widget = self.FindFocus()
+        copied = widget.GetStringSelection()
+        if not wx.TheClipboard.IsOpened():  # may crash, otherwise
+            do = wx.TextDataObject()
+            do.SetText(copied)
+            wx.TheClipboard.Open()
+            wx.TheClipboard.SetData(do)
+            wx.TheClipboard.Close()
         
+    def OnPaste(self, e):
+        widget = self.FindFocus()
+        if not wx.TheClipboard.IsOpened():  # may crash, otherwise
+            do = wx.TextDataObject()
+            wx.TheClipboard.Open()
+            success = wx.TheClipboard.GetData(do)
+            wx.TheClipboard.Close()
+            if success:
+                widget.WriteText(do.GetText())
+
+    def OnCut(self, e):
+        pass
+    
 if __name__ == '__main__':
     app = wx.App()
     fr = MyFrame()
