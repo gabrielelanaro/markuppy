@@ -26,6 +26,7 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnSaveIn, self.save_in_me)
         self.Bind(wx.EVT_MENU, self.OnSaveOut, self.save_out_me)
         self.Bind(wx.EVT_MENU, self.OnQuit, self.quit_me)
+        self.Bind(wx.EVT_MENU, self.OnAboutBox, self.about_me)
         
         self.SetMinSize(size) # To prevent collapsing the window when
                               # resizing
@@ -61,8 +62,9 @@ class MyFrame(wx.Frame):
         self.quit_me = quit_me
         
         helpmenu = wx.Menu()
-        manual_me = helpmenu.Append(wx.ID_HELP, 'Manual')
         about_me = helpmenu.Append(wx.ID_ABOUT)
+        
+        self.about_me = about_me
         
         menubar.Append(filemenu, "&File")
         menubar.Append(editmenu, "Edit")
@@ -183,6 +185,31 @@ class MyFrame(wx.Frame):
 
     def OnQuit(self, e):
         self.Close()
+        
+    def OnAboutBox(self, e):
+        
+        description = "\n".join(["Markuppy is a trivial application to convert a ",
+                                "stupid (really stupid!) markup language in HTML",
+                                "LaTeX and why not? -- Other formats."])
+
+        licence = "Do what the fuck you like with this script"
+
+
+        info = wx.AboutDialogInfo()
+
+        info.SetIcon(wx.ArtProvider().GetIcon(wx.ART_HELP, size=(64,64)))
+        info.SetName('Markuppy')
+        info.SetVersion('0.1')
+        info.SetDescription(description)
+        info.SetCopyright('(C) 2011 Gabriele Lanaro')
+        #info.SetWebSite('http://www.zetcode.com')
+        info.SetLicence(licence)
+        info.AddDeveloper('Gabriele Lanaro')
+        info.AddDocWriter('Gabriele Lanaro')
+        info.AddArtist('The Tango crew')
+        #info.AddTranslator('Jan Bodnar')
+
+        wx.AboutBox(info)
 debug = True
 
 if __name__ == '__main__':
